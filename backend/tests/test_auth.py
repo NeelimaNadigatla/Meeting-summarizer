@@ -31,6 +31,12 @@ def test_login_success_and_wrong_password(client):
     assert bad.status_code == 401
 
 
+def test_root_explains_the_api(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json()["docs"] == "/docs"
+
+
 def test_protected_route_needs_token(client):
     assert client.get("/api/auth/me").status_code == 401
     bad_token = {"Authorization": "Bearer not-a-real-token"}

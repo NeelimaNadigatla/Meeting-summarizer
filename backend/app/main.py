@@ -31,6 +31,16 @@ app.include_router(auth.router)
 app.include_router(meetings.router)
 
 
+@app.get("/")
+def root():
+    # This is an API, not a website. Point visitors to the right places instead of a 404.
+    return {
+        "message": "Meeting Summarizer API is running. The website is the frontend, not this URL.",
+        "docs": "/docs",
+        "health": "/api/health",
+    }
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok", "summarizer": settings.summarizer_provider}
