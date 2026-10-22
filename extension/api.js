@@ -22,16 +22,11 @@ async function apiRequest(path, { method = "GET", body, token } = {}) {
   const headers = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  let response;
-  try {
-    response = await fetch(`${API_URL}${path}`, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  } catch {
-    throw new Error(`Can't reach the server at ${API_URL}. Is the backend running?`);
-  }
+  const response = await fetchWithRetry(`${API_URL}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
 
   const data = await response.json().catch(() => null);
   if (!response.ok) {
@@ -41,6 +36,21 @@ async function apiRequest(path, { method = "GET", body, token } = {}) {
     throw error;
   }
   return data;
+}
+
+// A free hosted server sleeps when unused and takes up to a minute to wake up.
+// Retry network failures (no response at all) a few times: after 2, 4, 8 and 16 seconds.
+async function fetchWithRetry(url, options) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await fetch(url, options);
+    } catch {
+      if (attempt === 4) {
+        throw new Error("Can't reach the server. It may be waking up; please try again in a minute.");
+      }
+      await new Promise((resolve) => setTimeout(resolve, 2000 * 2 ** attempt));
+    }
+  }
 }
 
 function errorMessage(data, status) {
