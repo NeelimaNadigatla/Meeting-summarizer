@@ -19,5 +19,5 @@
     }
   ],
   "permissions": ["storage", "contextMenus", "activeTab", "scripting"],
-  "host_permissions": ["http://localhost:8000/*"]
+  "host_permissions": ["https://meeting-summarizer-api-9x44.onrender.com/*", "http://localhost:8000/*"]
 }
