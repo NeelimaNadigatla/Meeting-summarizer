@@ -11,3 +11,6 @@ __pycache__/
 # Node
 node_modules/
 dist/
+
+# Personal study notes (kept on this laptop only)
+LEARNING.md
