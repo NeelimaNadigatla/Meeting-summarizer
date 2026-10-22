@@ -1,0 +1,89 @@
+<!doctype html>
+<!-- Local test page that imitates Google Meet's caption area, for testing meet-captions.js.
+     Not used by the extension itself. Serve the extension folder and open /dev/fake-meet.html. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Fake Meet captions</title>
+    <style>
+      body { font-family: system-ui, sans-serif; background: #202124; color: #fff; padding: 20px; }
+      [role="region"] { background: rgba(0, 0, 0, 0.6); padding: 12px; border-radius: 8px; max-width: 700px; }
+      [role="region"] > div { margin-bottom: 10px; }
+      img { width: 20px; height: 20px; border-radius: 50%; background: #888; vertical-align: middle; }
+    </style>
+  </head>
+  <body>
+    <h1>Fake Meet</h1>
+    <div id="captions-host"></div>
+    <pre id="output"></pre>
+
+    <script src="../meet-captions.js"></script>
+    <script>
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const capture = window.__meetCaptionCapture;
+
+      // renamed = true simulates Google changing all its class names.
+      function makeRegion() {
+        const region = document.createElement("div");
+        region.setAttribute("role", "region");
+        region.setAttribute("aria-label", "Captions");
+        document.getElementById("captions-host").replaceChildren(region);
+        return region;
+      }
+
+      function addBlock(region, speaker, text, renamed) {
+        const block = document.createElement("div");
+        block.className = renamed ? "zz1" : "nMcdL bj4p3b";
+        const head = document.createElement("div");
+        head.className = renamed ? "zz2" : "KcIKyf";
+        const name = document.createElement("span");
+        name.className = renamed ? "zz3" : "NWpY1d";
+        name.textContent = speaker;
+        head.append(document.createElement("img"), name);
+        const body = document.createElement("div");
+        body.className = renamed ? "zz4" : "ygicle VbkSUe";
+        body.textContent = text;
+        block.append(head, body);
+        region.append(block);
+        return body;
+      }
+
+      async function runScenario(renamed) {
+        capture.stop();
+        capture.clear();
+        const region = makeRegion();
+        capture.start();
+
+        // Words appear gradually, like live captions.
+        const priya = addBlock(region, "Priya", "Let's review", renamed);
+        await wait(300);
+        priya.textContent = "Let's review the launch plan for the new app.";
+        await wait(300);
+
+        const arjun = addBlock(region, "Arjun", "I will send the release notes by Friday", renamed);
+        await wait(300);
+        // Meet corrects a word it misheard.
+        arjun.textContent = "I will send the release notes by Friday.";
+
+        // A long turn: Meet drops the oldest words from the start of the caption.
+        const kavya = addBlock(region, "Kavya", "We agreed to launch the beta on the fifteenth and the dashboard", renamed);
+        await wait(300);
+        kavya.textContent = "launch the beta on the fifteenth and the dashboard bugs will be fixed first.";
+        await wait(300);
+
+        // Old captions scroll away (are removed from the page). They must stay in our transcript.
+        region.firstElementChild.remove();
+        await wait(300);
+
+        capture.stop();
+        return { status: capture.status(), ...capture.transcript() };
+      }
+
+      window.runAll = async () => {
+        const results = { current: await runScenario(false), renamed: await runScenario(true) };
+        document.getElementById("output").textContent = JSON.stringify(results, null, 2);
+        return results;
+      };
+    </script>
+  </body>
+</html>

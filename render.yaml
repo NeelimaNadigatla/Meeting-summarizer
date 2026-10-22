@@ -1,0 +1,24 @@
+# Render "Blueprint": tells Render how to run the FastAPI backend.
+# Render reads this file from the GitHub repo (New → Blueprint).
+services:
+  - type: web
+    name: meeting-summarizer-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: DATABASE_URL # paste your Neon connection string in the Render dashboard
+        sync: false
+      - key: JWT_SECRET # Render generates a random secret
+        generateValue: true
+      - key: SUMMARIZER_PROVIDER # "mock" (free) or "claude" (needs ANTHROPIC_API_KEY)
+        value: mock
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CORS_ORIGINS # your Netlify URL, e.g. https://your-site.netlify.app
+        sync: false

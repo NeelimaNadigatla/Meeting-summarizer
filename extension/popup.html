@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Meeting Summarizer</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <strong>📝 Meeting Summarizer</strong>
+      <button id="logout" class="link" hidden>Log out</button>
+    </header>
+
+    <main>
+      <p id="error" class="error" hidden></p>
+
+      <!-- Shown when logged out -->
+      <form id="login-view" hidden>
+        <h2 class="gradient-text">👋 Welcome back</h2>
+        <p class="muted">Log in with your Meeting Summarizer account.</p>
+        <label>Email <input id="email" type="email" required /></label>
+        <label>Password <input id="password" type="password" required /></label>
+        <button class="btn" type="submit">Log in</button>
+        <a id="signup" class="small" target="_blank">No account? Sign up in the web app</a>
+      </form>
+
+      <!-- Shown when logged in AND the current tab is Google Meet -->
+      <section id="meet-panel" class="meet-panel" hidden>
+        <div class="meet-head">
+          <strong>🎥 Google Meet</strong>
+          <span id="meet-state" class="pill"></span>
+        </div>
+        <p id="meet-hint" class="small"></p>
+        <div id="meet-live" class="live" aria-live="polite" hidden></div>
+        <div id="meet-controls" class="row" hidden>
+          <button id="meet-toggle" class="btn" type="button">● Start capture</button>
+          <button id="meet-summarize" class="btn btn-ghost" type="button">✨ Summarize</button>
+          <button id="meet-clear" class="link small" type="button">Clear</button>
+        </div>
+      </section>
+
+      <!-- Shown when logged in -->
+      <form id="main-view" hidden>
+        <p class="muted small">Signed in as <span id="user-email"></span></p>
+        <label>Title <span class="muted">(optional)</span> <input id="title" maxlength="200" /></label>
+        <label>Transcript <textarea id="transcript" rows="7" placeholder="Paste a transcript…" required></textarea></label>
+        <button class="btn" type="submit" id="summarize">✨ Summarize</button>
+        <p class="tip">💡 Tip: select text on any page, right-click, and choose “Summarize meeting text”.</p>
+      </form>
+
+      <!-- Shown after a summary -->
+      <section id="result" hidden>
+        <h2 id="result-title" class="gradient-text"></h2>
+        <div class="section section-summary">
+          <h3>📋 Summary</h3>
+          <p id="result-summary"></p>
+        </div>
+        <div class="section section-decisions">
+          <h3>✅ Decisions</h3>
+          <ul id="result-decisions"></ul>
+        </div>
+        <div class="section section-actions">
+          <h3>🎯 Action items</h3>
+          <ul id="result-actions"></ul>
+        </div>
+        <div class="row">
+          <a id="open-meeting" class="btn" target="_blank">Open full summary</a>
+          <button id="new" class="btn btn-ghost">New</button>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Meeting Summarizer",
+  "version": "1.1.0",
+  "description": "Capture Google Meet captions live, or summarize transcripts on any page into decisions and action items.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Meeting Summarizer"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://meet.google.com/*"],
+      "js": ["meet-captions.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": ["storage", "contextMenus", "activeTab", "scripting"],
+  "host_permissions": ["http://localhost:8000/*"]
+}

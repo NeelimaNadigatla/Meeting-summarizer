@@ -1,0 +1,14 @@
+# Tells Netlify how to build and serve the React frontend.
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+# The backend URL is set in Netlify: Site configuration → Environment variables →
+# VITE_API_URL = https://your-backend.onrender.com
+
+# React Router handles URLs like /meetings/5 in the browser, so every path must load index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
